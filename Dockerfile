@@ -22,9 +22,15 @@ ARG CHROMDRIVER_VERSION=83.0.4103.39
 ARG FIREFOXDRIVER_VERSION=0.29.0
 
 #Step 2: Install Chrome
-RUN curl http://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_$CHROME_VERSION-1_amd64.deb -o /chrome.deb
-RUN dpkg -i /chrome.deb
-RUN rm /chrome.deb
+# RUN curl http://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_$CHROME_VERSION-1_amd64.deb -o /chrome.deb
+# RUN dpkg -i /chrome.deb
+# RUN rm /chrome.deb
+
+RUN if [ "$USE_CHROME_STABLE" = "true" ]; then \
+    cd /tmp &&\
+    wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb &&\
+    dpkg -i google-chrome-stable_current_amd64.deb;\
+  fi
 #Step 3: Install chromedriver for Selenium
 RUN mkdir -p /app/bin
 RUN curl https://chromedriver.storage.googleapis.com/$CHROMDRIVER_VERSION/chromedriver_linux64.zip -o /tmp/chromedriver.zip \
@@ -37,6 +43,17 @@ RUN wget --no-verbose -O /tmp/firefox.tar.bz2 https://download-installer.cdn.moz
   && tar xvf /tmp/firefox.tar \
   && mv /firefox /opt/firefox-$FIREFOX_VERSION \
   && ln -s /opt/firefox-$FIREFOX_VERSION/firefox /usr/bin/firefox
+
+
+
+#Step 4: Alternative Install Firefox but did not work
+
+# RUN wget https://github.com/mozilla/geckodriver/releases/download/v$FIREFOXDRIVER_VERSION/geckodriver-v$FIREFOXDRIVER_VERSION-linux64.tar.gz \
+#     && tar -xf geckodriver-v0.30.0-linux64.tar.gz \
+#     && cp geckodriver /app/bin/geckodriver;
+# RUN chmod +x /app/bin/geckodriver
+
+
 #Step 5: Install Geckodriver
 RUN wget https://github.com/mozilla/geckodriver/releases/download/v$FIREFOXDRIVER_VERSION/geckodriver-v$FIREFOXDRIVER_VERSION-linux64.tar.gz
 RUN tar -xvzf geckodriver-v0.29.0-linux64.tar.gz
