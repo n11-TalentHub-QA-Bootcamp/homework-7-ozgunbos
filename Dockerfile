@@ -33,9 +33,11 @@ RUN if [ "$USE_CHROME_STABLE" = "true" ]; then \
   fi
 #Step 3: Install chromedriver for Selenium
 RUN mkdir -p /app/bin
-RUN curl https://chromedriver.storage.googleapis.com/$CHROMDRIVER_VERSION/chromedriver_linux64.zip -o /tmp/chromedriver.zip \
-    && unzip /tmp/chromedriver.zip -d /app/bin/ \
-    && rm /tmp/chromedriver.zip
+RUN if [ "$USE_CHROME_STABLE" = "true" ]; then \
+    cd /tmp &&\
+    wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb &&\
+    dpkg -i google-chrome-stable_current_amd64.deb;\
+  fi
 RUN chmod +x /app/bin/chromedriver
 #Step 4 : Install firefox
 RUN wget --no-verbose -O /tmp/firefox.tar.bz2 https://download-installer.cdn.mozilla.net/pub/firefox/releases/$FIREFOX_VERSION/linux-x86_64/en-US/firefox-$FIREFOX_VERSION.tar.bz2 \
